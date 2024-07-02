@@ -1,14 +1,16 @@
+require('dotenv').config()
 const express = require("express");
 const cors = require("cors");
 const routes = require("./routes/routes");
+const connection = require("./database/connection")
 
-const PORT_API = process.env.PORT_API || 3000;
+const PORT_API = process.env.PORT_API 
 
 class Server {
   constructor(server = express()) {
     this.middlewares(server);
     this.database();
-    server.use("/api", routes); // Prefixo para as rotas
+    server.use(routes); // Prefixo para as rotas
     this.initializeServer(server);
   }
 
@@ -19,10 +21,11 @@ class Server {
 
   async database() {
     try {
-      await Connection.authenticate();
+      await connection.authenticate();
       console.log("Servidor conectado!");
-    } catch {
+    } catch (error){
       console.log("Erro ao inicializar o servidor");
+      console.log(error)
     }
   }
 
