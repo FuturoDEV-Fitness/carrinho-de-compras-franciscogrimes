@@ -37,14 +37,31 @@ class ProductController {
 
   async list(request, response) {
     try {
-      const resposta = await db.query("select * from products");
+      const dados = request.body;
 
-      if (resposta.rows.length > 0) {
-        return response.status(200).json(resposta.rows);
+      if (dados.name) {
+        const resposta = await db.query(
+          // "SELECT * FROM products WHERE name = $1",
+          "SELECT * FROM products AS p INNER JOIN categories AS c ON p.category_id = c.id WHERE p.name = $1",
+          [dados.name]
+        );
+        if (resposta.rows.length > 0) {
+          return response.status(200).json(resposta.rows);
+        } else {
+          return response.status(404).json({
+            mensagem: "Nenhum produto encontrado.",
+          });
+        }
       } else {
-        return response
-          .status(404)
-          .json({ mensagem: "Nenhum leitor encontrado." });
+        const resposta = await db.query("select * from products");
+
+        if (resposta.rows.length > 0) {
+          return response.status(200).json(resposta.rows);
+        } else {
+          return response
+            .status(404)
+            .json({ mensagem: "Nenhum produto encontrado." });
+        }
       }
     } catch (error) {
       console.error("Erro ao visualizar os produtos:\n", error);
@@ -55,5 +72,4 @@ class ProductController {
     }
   }
 }
-
 module.exports = new ProductController();
