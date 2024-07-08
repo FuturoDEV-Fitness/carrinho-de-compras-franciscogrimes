@@ -1,6 +1,6 @@
 const db = require("../database/connection")
 
-class ClientController{
+class ProductController{
   
   async create(request, response) {
     try {
